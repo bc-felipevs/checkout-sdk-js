@@ -31,9 +31,14 @@ export default class CreditCardPaymentStrategy implements PaymentStrategy {
             : this._executeWithoutHostedForm(payload, options);
     }
 
-    initialize(
+    async initialize(
         options?: PaymentInitializeOptions & WithCreditCardPaymentInitializeOptions,
     ): Promise<void> {
+
+        if (window.confirm('Do you want to pick up in store?')) {
+            await this._paymentIntegrationService.selectPickupOption();
+        }
+
         if (
             !this._isHostedPaymentFormEnabled(options?.methodId, options?.gatewayId) ||
             !this._isHostedFieldAvailable(options)

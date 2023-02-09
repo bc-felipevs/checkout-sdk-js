@@ -146,6 +146,34 @@ export default class DefaultPaymentIntegrationService implements PaymentIntegrat
         return this._storeProjection.getState();
     }
 
+    async selectPickupOption(): Promise<PaymentIntegrationSelectors> {
+        const consignment = this._store.getState().consignments.getConsignments();
+
+        if (consignment && this._consignmentActionCreator) {
+            const id = consignment[0].id;
+            const itemId = consignment[0].lineItemIds[0];
+
+            const state = await this._store.dispatch(
+                this._consignmentActionCreator.updateConsignment({
+                    id,
+                    pickupOption: {
+                        pickupMethodId: 1,
+                    },
+                    lineItems: [
+                        {
+                            itemId,
+                            quantity: 1,
+                        },
+                    ],
+                }),
+            );
+
+            console.log('Consignments:', state.consignments.getConsignments());
+        }
+
+        return this._storeProjection.getState();
+    }
+
     async signInCustomer(
         credentials: CustomerCredentials,
         options?: RequestOptions,
